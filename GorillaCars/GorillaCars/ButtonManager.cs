@@ -13,16 +13,13 @@ namespace GorillaCars
             boxCollider.isTrigger = true;
             gameObject.layer = 18;
 
-
             onPressButton = new UnityEngine.Events.UnityEvent();
             onPressButton.AddListener(new UnityEngine.Events.UnityAction(ButtonActivation));
-
         }
 
         public override void ButtonActivation()
         {
-            manager manager = FindAnyObjectByType<manager>();
-            manager.clicked(this.gameObject.name);
+            manager.Instance.clicked(this.gameObject.name);
         }
     }
 }
