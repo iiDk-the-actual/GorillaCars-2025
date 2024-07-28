@@ -45,6 +45,8 @@ namespace GorillaCars
         Transform rearRightWheel;
 
         GameObject WhatTheFuckIsThisCube; // copyrighted by biotest05
+        GameObject PowerOnCar;
+        GameObject EngineStart;
 
         //bool setup; (commented out because its never used)
         bool guiEnabled;
@@ -77,6 +79,9 @@ namespace GorillaCars
 
             WhatTheFuckIsThisCube = Plugin.Instance.CarGameObject.transform.Find("Cube").gameObject;
             WhatTheFuckIsThisCube.transform.localPosition = new Vector3(-0.3969f, -0.74f, 0.481f);
+
+            PowerOnCar = Plugin.Instance.CarGameObject.transform.FindChildRecursive("PowerOnCar").gameObject;
+            EngineStart = Plugin.Instance.CarGameObject.transform.FindChildRecursive("Engine Start").gameObject;
 
             try
             {
@@ -230,13 +235,13 @@ namespace GorillaCars
                         if (!IsCarOn)
                         {
                             IsCarOn = true;
-                            Plugin.Instance.CarGameObject.transform.FindChildRecursive("PowerOnCar").GetComponent<MeshRenderer>().material.color = Color.green;
-                            Plugin.Instance.CarGameObject.transform.FindChildRecursive("Engine Start").GetComponent<AudioSource>().Play();
+                            PowerOnCar.GetComponent<MeshRenderer>().material.color = Color.green;
+                            EngineStart.GetComponent<AudioSource>().Play();
                         }
                         else
                         {
                             IsCarOn = false;
-                            Plugin.Instance.CarGameObject.transform.FindChildRecursive("PowerOnCar").GetComponent<MeshRenderer>().material.color = Color.red;
+                            PowerOnCar.GetComponent<MeshRenderer>().material.color = Color.red;
                         }
                     }
                     touchTime1 = Time.time;

@@ -82,6 +82,7 @@ namespace GorillaCars
         float lastTime;
 
         bool inRoom = true;
+
         private void OnGUI()
         {
             GUILayout.Label("Custom Properties");
@@ -95,6 +96,7 @@ namespace GorillaCars
             }
             GUILayout.EndArea();
         }
+
         void Awake()
         {
             Instance = this;
@@ -108,7 +110,7 @@ namespace GorillaCars
         void OnGameInitialized()
         {
             IsSteamVr = Traverse.Create(PlayFabAuthenticator.instance).Field("platform").GetValue().ToString().ToLower() == "steam";
-            Debug.Log("set steamvr");
+            Debug.Log($"SteamVR: {IsSteamVr.ToString()}");
 
             Debug.Log("About to load asset");
             bundle = LoadAssetBundle("GorillaCars.assets.car");
@@ -120,19 +122,15 @@ namespace GorillaCars
             Debug.Log("Instantiated carobject");
             CarGameObject.name = "CarGameObject";
             CarGameObject.transform.position = new Vector3(-64.4182f, 2.3273f, -71.1818f);
-            Debug.Log("Set name");
+            Debug.Log("Set name, position");
 
             Wheel = CarGameObject.transform.FindChildRecursive("st_wheel").gameObject;
-            Debug.Log("Found wheel");
+            Debug.Log("Found st_wheel");
 
             BoxCollider[] Colliders = CarGameObject.GetComponentsInChildren<BoxCollider>();
-            for (int i = 0; i < Colliders.Length; i++)
-            {
-                if (Colliders[i].isTrigger)
-                {
-                    Colliders[i].gameObject.AddComponent<ButtonManager>();
-                }
-            }
+            Colliders.Where(col => col.isTrigger)
+                     .ToList()
+                     .ForEach(col => col.gameObject.AddComponent<ButtonManager>());
 
             // shits hittin flips again -wryser
             MeshCollider[] a = CarGameObject.GetComponentsInChildren<MeshCollider>();
@@ -140,7 +138,7 @@ namespace GorillaCars
             {
                 Destroy(a[i]);
             }
-            Debug.Log("Set boxcolliders");
+            Debug.Log("Destroyed MeshColliders and added ButtonManager to BoxColliders with isTrigger");
 
             CarGameObject.AddComponent<manager>();
             Debug.Log("Made manager");
