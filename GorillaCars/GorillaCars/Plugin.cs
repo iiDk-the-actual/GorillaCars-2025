@@ -21,16 +21,32 @@ namespace GorillaCars
     {
         public override void OnJoinedRoom()
         {
-            foreach (Photon.Realtime.Player player in PhotonNetwork.PlayerListOthers)
+            foreach (Photon.Realtime.Player player in PhotonNetwork.PlayerList)
             {
                 ExitGames.Client.Photon.Hashtable hashthingy = player.CustomProperties;
-                if (hashthingy.ContainsKey("carX"))
+                if (hashthingy.ContainsKey("carX") && player != PhotonNetwork.LocalPlayer)
                 {
                     GameObject asset = Plugin.Instance.bundle.LoadAsset<GameObject>("car");
                     GameObject garn = Instantiate(asset);
                     garn.transform.position = new Vector3((float)hashthingy["carX"], (float)hashthingy["carY"], (float)hashthingy["carZ"]);
                     garn.transform.rotation = Quaternion.Euler((float)hashthingy["carRotX"], (float)hashthingy["carRotY"], (float)hashthingy["carRotZ"]);
                     Plugin.Instance.playerWithCarYeah.Add(player, garn);
+                    foreach (Rigidbody rb in gameObject.GetComponents<Rigidbody>())
+                    {
+                        Destroy(rb);
+                    }
+                    foreach (Rigidbody rb in gameObject.GetComponentsInChildren<Rigidbody>())
+                    {
+                        Destroy(rb);
+                    }
+                    foreach (Collider cl in gameObject.GetComponents<Collider>())
+                    {
+                        Destroy(cl);
+                    }
+                    foreach (Collider cl in gameObject.GetComponentsInChildren<Collider>())
+                    {
+                        Destroy(cl);
+                    }
                 }
             }
         }
@@ -38,19 +54,35 @@ namespace GorillaCars
         public override void OnPlayerEnteredRoom(Player newPlayer)
         {
             ExitGames.Client.Photon.Hashtable hashthingy = newPlayer.CustomProperties;
-            if (hashthingy.ContainsKey("carX"))
+            if (hashthingy.ContainsKey("carX") && newPlayer != PhotonNetwork.LocalPlayer)
             {
                 GameObject asset = Plugin.Instance.bundle.LoadAsset<GameObject>("car");
                 GameObject garn = Instantiate(asset);
                 garn.transform.position = new Vector3((float)hashthingy["carX"], (float)hashthingy["carY"], (float)hashthingy["carZ"]);
                 garn.transform.rotation = Quaternion.Euler((float)hashthingy["carRotX"], (float)hashthingy["carRotY"], (float)hashthingy["carRotZ"]);
                 Plugin.Instance.playerWithCarYeah.Add(newPlayer, garn);
+                foreach (Rigidbody rb in gameObject.GetComponents<Rigidbody>())
+                {
+                    Destroy(rb);
+                }
+                foreach (Rigidbody rb in gameObject.GetComponentsInChildren<Rigidbody>())
+                {
+                    Destroy(rb);
+                }
+                foreach (Collider cl in gameObject.GetComponents<Collider>())
+                {
+                    Destroy(cl);
+                }
+                foreach (Collider cl in gameObject.GetComponentsInChildren<Collider>())
+                {
+                    Destroy(cl);
+                }
             }
         }
 
         public override void OnPlayerLeftRoom(Player otherPlayer)
         {
-            if (Plugin.Instance.playerWithCarYeah.ContainsKey(otherPlayer))
+            if (Plugin.Instance.playerWithCarYeah.ContainsKey(otherPlayer) && otherPlayer != PhotonNetwork.LocalPlayer)
             {
                 Destroy(Plugin.Instance.playerWithCarYeah[otherPlayer]);
                 Plugin.Instance.playerWithCarYeah.Remove(otherPlayer);
@@ -59,7 +91,7 @@ namespace GorillaCars
 
         public override void OnPlayerPropertiesUpdate(Player targetPlayer, ExitGames.Client.Photon.Hashtable changedProps)
         {
-            if (changedProps.ContainsKey("carX"))
+            if (changedProps.ContainsKey("carX") && targetPlayer != PhotonNetwork.LocalPlayer)
             {
                 GameObject garn = Plugin.Instance.playerWithCarYeah[targetPlayer];
                 garn.transform.position = new Vector3(Mathf.Lerp((float)changedProps["carX"], garn.transform.position.x, 0.6f), Mathf.Lerp((float)changedProps["carY"], garn.transform.position.y, 0.6f), Mathf.Lerp((float)changedProps["carZ"], garn.transform.position.z, 0.6f));
