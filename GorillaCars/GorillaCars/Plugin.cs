@@ -130,9 +130,13 @@ namespace GorillaCars
             Debug.Log("Found st_wheel");
 
             BoxCollider[] Colliders = CarGameObject.GetComponentsInChildren<BoxCollider>();
-            Colliders.Where(col => col.isTrigger)
-                     .ToList()
-                     .ForEach(col => col.gameObject.AddComponent<ButtonManager>());
+            for (int i = 0; i < Colliders.Length; i++)
+            {
+                if (Colliders[i].isTrigger)
+                {
+                    Colliders[i].gameObject.AddComponent<ButtonManager>();
+                }
+            }
 
             // shits hittin flips again -wryser
             MeshCollider[] a = CarGameObject.GetComponentsInChildren<MeshCollider>();

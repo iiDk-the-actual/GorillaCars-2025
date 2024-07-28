@@ -49,7 +49,7 @@ namespace GorillaCars
         GameObject EngineStart;
 
         //bool setup; (commented out because its never used)
-        bool guiEnabled;
+        bool guiEnabled = true;
 
         void Awake()
         {
@@ -118,6 +118,8 @@ namespace GorillaCars
             {
                 if (hit.collider != null)
                     raycastsphere.transform.position = hit.point;
+                else
+                    raycastsphere.transform.position = Vector3.zero;
             }
         }
 
@@ -186,7 +188,7 @@ namespace GorillaCars
             if (guiEnabled)
             {
                 GUILayout.Label("garn47");
-                GUILayout.BeginArea(new Rect(10, 10, Screen.width, 500));
+                GUILayout.BeginArea(new Rect(500, 10, Screen.width - 500, 500));
                 GUILayout.Label("frontL wheel motorTorque: " + frontleft.motorTorque.ToString());
                 GUILayout.Label("frontR wheel motorTorque: " + frontright.motorTorque.ToString());
                 GUILayout.Label("backL wheel motorTorque: " + backleft.motorTorque.ToString());
