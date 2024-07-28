@@ -85,14 +85,16 @@ namespace GorillaCars
 
         private void OnGUI()
         {
-            GUILayout.Label("Custom Properties");
+            GUILayout.Label("Custom Properties"); // wryser prob added this
             GUILayout.BeginArea(new Rect(10, 10, Screen.width, 500));
             if (PhotonNetwork.InRoom)
             {
+                GUILayout.BeginVertical();
                 foreach (Photon.Realtime.Player player in PhotonNetwork.PlayerList)
                 {
                     GUILayout.Label(player.NickName + player.CustomProperties.ToString());
                 }
+                GUILayout.EndVertical();
             }
             GUILayout.EndArea();
         }
@@ -148,6 +150,32 @@ namespace GorillaCars
             Debug.Log("Setup2");
 
             gameObject.AddComponent<NetThingyWOOHOOO>();
+
+            bool[] whatWentWrong = new bool[] { SetProperty("carX", CarGameObject.transform.position.x), SetProperty("carY", CarGameObject.transform.position.y) , SetProperty("carZ", CarGameObject.transform.position.z) };
+            bool[] whatWentWrong2 = new bool[] { SetProperty("carRotX", CarGameObject.transform.rotation.x), SetProperty("carRotY", CarGameObject.transform.rotation.y) , SetProperty("carRotZ", CarGameObject.transform.rotation.z) };
+
+            for (int i = 0; i < whatWentWrong.Length; i++)
+            {
+                if (!whatWentWrong[i] || !whatWentWrong2[i])
+                {
+                    Debug.LogError($"whatWentWrong or whatWentWrong2 had made an error on index [{i}]");
+                    break;
+                }
+            }
+        }
+
+        public bool SetProperty(string key, object value)
+        {
+            try
+            {
+                PhotonNetwork.LocalPlayer.CustomProperties.AddOrUpdate(key, value);
+                return true;
+            }
+            catch (Exception e)
+            {
+                Debug.LogError(e.Message);
+                return false;
+            }
         }
 
         public AssetBundle LoadAssetBundle(string path)
@@ -160,7 +188,7 @@ namespace GorillaCars
 
         void Update()
         {
-            if (PhotonNetwork.InRoom && Time.time > lastTime + Tick && PhotonNetwork.InRoom)
+            if (PhotonNetwork.InRoom && Time.time > lastTime + Tick)
             {   
                 lastTime = Time.time;
                 var ht = PhotonNetwork.LocalPlayer.CustomProperties;
