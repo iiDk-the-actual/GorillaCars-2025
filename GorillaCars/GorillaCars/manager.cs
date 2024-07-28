@@ -118,8 +118,6 @@ namespace GorillaCars
 
         public void Update()
         {
-            if (Keyboard.current.vKey.wasPressedThisFrame) guiEnabled = !guiEnabled;
-
             if (ControllerInputPoller.instance.leftControllerPrimaryButton)
             {
                 Plugin.Instance.CarGameObject.transform.position = raycastsphere.transform.position + new Vector3(0, 1.5f, 0);
@@ -219,7 +217,7 @@ namespace GorillaCars
                                 GorillaLocomotion.Player.Instance.locomotionEnabledLayers = baseMask;
                                 GorillaLocomotion.Player.Instance.bodyCollider.isTrigger = false;
                                 GorillaLocomotion.Player.Instance.headCollider.isTrigger = false;
-                                Patches.TeleportPatch.TeleportPlayer(Plugin.Instance.CarGameObject.transform.position, Plugin.Instance.CarGameObject.transform.rotation.x, true);
+                                Patches.TeleportPatch.TeleportPlayer(Plugin.Instance.CarGameObject.transform.position + (Vector3.up * 2), Plugin.Instance.CarGameObject.transform.rotation.x, true);
                             }
                         }
                     } 
