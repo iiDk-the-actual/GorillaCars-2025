@@ -26,7 +26,8 @@ namespace GorillaCars
                 ExitGames.Client.Photon.Hashtable hashthingy = player.CustomProperties;
                 if (hashthingy.ContainsKey("carX"))
                 {
-                    GameObject garn = Plugin.Instance.bundle.LoadAsset<GameObject>("car");
+                    GameObject asset = Plugin.Instance.bundle.LoadAsset<GameObject>("car");
+                    GameObject garn = Instantiate(asset);
                     garn.transform.position = new Vector3((float)hashthingy["carX"], (float)hashthingy["carY"], (float)hashthingy["carZ"]);
                     garn.transform.rotation = Quaternion.Euler((float)hashthingy["carRotX"], (float)hashthingy["carRotY"], (float)hashthingy["carRotZ"]);
                     Plugin.Instance.playerWithCarYeah.Add(player, garn);
@@ -39,7 +40,8 @@ namespace GorillaCars
             ExitGames.Client.Photon.Hashtable hashthingy = newPlayer.CustomProperties;
             if (hashthingy.ContainsKey("carX"))
             {
-                GameObject garn = Plugin.Instance.bundle.LoadAsset<GameObject>("car");
+                GameObject asset = Plugin.Instance.bundle.LoadAsset<GameObject>("car");
+                GameObject garn = Instantiate(asset);
                 garn.transform.position = new Vector3((float)hashthingy["carX"], (float)hashthingy["carY"], (float)hashthingy["carZ"]);
                 garn.transform.rotation = Quaternion.Euler((float)hashthingy["carRotX"], (float)hashthingy["carRotY"], (float)hashthingy["carRotZ"]);
                 Plugin.Instance.playerWithCarYeah.Add(newPlayer, garn);
@@ -79,8 +81,20 @@ namespace GorillaCars
         public const float Tick = 1.0f / 4f;
         float lastTime;
 
-        bool inRoom;
-
+        bool inRoom = true;
+        private void OnGUI()
+        {
+            GUILayout.Label("Custom Properties");
+            GUILayout.BeginArea(new Rect(10, 10, Screen.width, 500));
+            if (PhotonNetwork.InRoom)
+            {
+                foreach (Photon.Realtime.Player player in PhotonNetwork.PlayerList)
+                {
+                    GUILayout.Label(player.NickName + player.CustomProperties.ToString());
+                }
+            }
+            GUILayout.EndArea();
+        }
         void Awake()
         {
             Instance = this;
@@ -94,43 +108,45 @@ namespace GorillaCars
         void OnGameInitialized()
         {
             IsSteamVr = Traverse.Create(PlayFabAuthenticator.instance).Field("platform").GetValue().ToString().ToLower() == "steam";
+            Debug.Log("set steamvr");
 
+            Debug.Log("About to load asset");
             bundle = LoadAssetBundle("GorillaCars.assets.car");
+            Debug.Log("Loaded AssetBundle");
             CarGameObject = bundle.LoadAsset<GameObject>("car");
+            Debug.Log("Loaded Asset");
 
             CarGameObject = GameObject.Instantiate(CarGameObject);
+            Debug.Log("Instantiated carobject");
             CarGameObject.name = "CarGameObject";
             CarGameObject.transform.position = new Vector3(-64.4182f, 2.3273f, -71.1818f);
-
-            var table = PhotonNetwork.LocalPlayer.CustomProperties;
-            table.AddOrUpdate("carX", CarGameObject.transform.position.x);
-            table.AddOrUpdate("carY", CarGameObject.transform.position.y);
-            table.AddOrUpdate("carZ", CarGameObject.transform.position.z);
-            table.AddOrUpdate("carRotX", CarGameObject.transform.rotation.x);
-            table.AddOrUpdate("carRotY", CarGameObject.transform.rotation.y);
-            table.AddOrUpdate("carRotZ", CarGameObject.transform.rotation.z);
+            Debug.Log("Set name");
 
             Wheel = CarGameObject.transform.FindChildRecursive("st_wheel").gameObject;
+            Debug.Log("Found wheel");
 
             BoxCollider[] Colliders = CarGameObject.GetComponentsInChildren<BoxCollider>();
-            Colliders.Where(col => col.isTrigger)
-                     .ToList()
-                     .ForEach(col => col.gameObject.AddComponent<ButtonManager>());
+            for (int i = 0; i < Colliders.Length; i++)
+            {
+                Colliders[i].gameObject.AddComponent<ButtonManager>();
+            }
+            
+            // shits hittin flips again -wryser
+            MeshCollider[] a = CarGameObject.GetComponentsInChildren<MeshCollider>();
+            for(int i = 0; i < a.Length; i++)
+            {
+                Destroy(a[i]);
+            }
+            Debug.Log("Set boxcolliders");
 
             CarGameObject.AddComponent<manager>();
+            Debug.Log("Made manager");
 
-            GorillaTagger.Instance.rigidbody.drag = 0;
-
+            Debug.Log("About to setup2");
             manager.Instance.Setup2();
-            manager.Instance.UndoMySetup();
+            Debug.Log("Setup2");
 
             gameObject.AddComponent<NetThingyWOOHOOO>();
-
-        }
-        void OnDisable()
-        {
-            manager.Instance.UndoMySetup();
-            inRoom = false;
         }
 
         public AssetBundle LoadAssetBundle(string path)
@@ -143,10 +159,10 @@ namespace GorillaCars
 
         void Update()
         {
-            if (inRoom && Time.time > lastTime + Tick)
+            if (inRoom && Time.time > lastTime + Tick && PhotonNetwork.InRoom)
             {   
                 lastTime = Time.time;
-                ExitGames.Client.Photon.Hashtable ht = PhotonNetwork.LocalPlayer.CustomProperties;
+                var ht = PhotonNetwork.LocalPlayer.CustomProperties;
                 bool moved = CarGameObject.transform.position != new Vector3((float)ht["carX"], (float)ht["carY"], (float)ht["carZ"]); 
                 bool rotated = CarGameObject.transform.rotation != Quaternion.Euler((float)ht["carRotX"], (float)ht["carRotY"], (float)ht["carRotZ"]);
                 if (moved)

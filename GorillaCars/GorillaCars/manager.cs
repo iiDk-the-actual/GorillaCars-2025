@@ -120,58 +120,55 @@ namespace GorillaCars
         {
             if (Keyboard.current.vKey.wasPressedThisFrame) guiEnabled = !guiEnabled;
 
-            if (setup)
+            if (ControllerInputPoller.instance.leftControllerPrimaryButton)
             {
-                if (ControllerInputPoller.instance.leftControllerPrimaryButton)
-                {
-                    Plugin.Instance.CarGameObject.transform.position = raycastsphere.transform.position + new Vector3(0, 1.5f, 0);
-                    Plugin.Instance.CarGameObject.transform.localRotation = Quaternion.Euler(new Vector3(leftStick.x, 0, 0));
-                    Plugin.Instance.CarGameObject.GetComponent<Rigidbody>().velocity = Vector3.zero;
-                }
-                if (Plugin.IsSteamVr)
-                {
-                    leftStick = SteamVR_Actions.gorillaTag_LeftJoystick2DAxis.GetAxis(SteamVR_Input_Sources.LeftHand);
-                }
-                else
-                {
-                    ControllerInputPoller.instance.leftControllerDevice.TryGetFeatureValue(UnityEngine.XR.CommonUsages.primary2DAxis, out leftStick);
-                }
-                Plugin.Instance.Wheel.transform.rotation = Quaternion.Euler(0, 0, GorillaTagger.Instance.leftHandTransform.position.x * 360);
-
-                if (sitting)
-                {
-                    GorillaTagger.Instance.rigidbody.drag = 60000;
-                    GorillaTagger.Instance.mainCamera.transform.parent.transform.position = WhatTheFuckIsThisCube.transform.position;
-                    GorillaTagger.Instance.mainCamera.transform.parent.rotation = WhatTheFuckIsThisCube.transform.rotation;
-                }
-                else
-                {
-                    GorillaTagger.Instance.rigidbody.drag = 0;
-                }
-                if (Drving)
-                {
-                    backleft.motorTorque = ControllerInputPoller.instance.leftControllerIndexFloat * 700;
-                    backright.motorTorque = ControllerInputPoller.instance.leftControllerIndexFloat * 700;
-                }
-                else if (!Drving)
-                {
-                    backleft.motorTorque = -ControllerInputPoller.instance.leftControllerIndexFloat * 700;
-                    backright.motorTorque = -ControllerInputPoller.instance.leftControllerIndexFloat * 700;
-                }
-
-                frontleft.brakeTorque = ControllerInputPoller.instance.rightControllerGripFloat * 200;
-                frontright.brakeTorque = ControllerInputPoller.instance.rightControllerGripFloat * 200;
-                backleft.brakeTorque = ControllerInputPoller.instance.leftControllerGripFloat * 200;
-                backright.brakeTorque = ControllerInputPoller.instance.leftControllerGripFloat * 200;
-
-                frontleft.steerAngle = leftStick.x * 35f;
-                frontright.steerAngle = leftStick.x * 35f;
-
-                Updatewheel(frontleft, frontLeftWheel);
-                Updatewheel(frontright, frontRightWheel);
-                Updatewheel(backright, rearRightWheel);
-                Updatewheel(backleft, rearLeftWheel);
+                Plugin.Instance.CarGameObject.transform.position = raycastsphere.transform.position + new Vector3(0, 1.5f, 0);
+                Plugin.Instance.CarGameObject.transform.localRotation = Quaternion.Euler(new Vector3(leftStick.x, 0, 0));
+                Plugin.Instance.CarGameObject.GetComponent<Rigidbody>().velocity = Vector3.zero;
             }
+            if (Plugin.IsSteamVr)
+            {
+                leftStick = SteamVR_Actions.gorillaTag_LeftJoystick2DAxis.GetAxis(SteamVR_Input_Sources.LeftHand);
+            }
+            else
+            {
+                ControllerInputPoller.instance.leftControllerDevice.TryGetFeatureValue(UnityEngine.XR.CommonUsages.primary2DAxis, out leftStick);
+            }
+            Plugin.Instance.Wheel.transform.rotation = Quaternion.Euler(0, 0, GorillaTagger.Instance.leftHandTransform.position.x * 360);
+
+            if (sitting)
+            {
+                GorillaTagger.Instance.rigidbody.drag = 60000;
+                GorillaTagger.Instance.mainCamera.transform.parent.transform.position = WhatTheFuckIsThisCube.transform.position;
+                GorillaTagger.Instance.mainCamera.transform.parent.rotation = WhatTheFuckIsThisCube.transform.rotation;
+            }
+            else
+            {
+                GorillaTagger.Instance.rigidbody.drag = 0;
+            }
+            if (Drving)
+            {
+                backleft.motorTorque = ControllerInputPoller.instance.leftControllerIndexFloat * 700;
+                backright.motorTorque = ControllerInputPoller.instance.leftControllerIndexFloat * 700;
+            }
+            else if (!Drving)
+            {
+                backleft.motorTorque = -ControllerInputPoller.instance.leftControllerIndexFloat * 700;
+                backright.motorTorque = -ControllerInputPoller.instance.leftControllerIndexFloat * 700;
+            }
+
+            frontleft.brakeTorque = ControllerInputPoller.instance.rightControllerGripFloat * 200;
+            frontright.brakeTorque = ControllerInputPoller.instance.rightControllerGripFloat * 200;
+            backleft.brakeTorque = ControllerInputPoller.instance.leftControllerGripFloat * 200;
+            backright.brakeTorque = ControllerInputPoller.instance.leftControllerGripFloat * 200;
+
+            frontleft.steerAngle = leftStick.x * 35f;
+            frontright.steerAngle = leftStick.x * 35f;
+
+            Updatewheel(frontleft, frontLeftWheel);
+            Updatewheel(frontright, frontRightWheel);
+            Updatewheel(backright, rearRightWheel);
+            Updatewheel(backleft, rearLeftWheel);
         }
 
         public void Updatewheel(WheelCollider collider, Transform wheel)
