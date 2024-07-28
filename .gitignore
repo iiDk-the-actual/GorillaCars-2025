@@ -1,0 +1,11 @@
+
+*.v2
+*.vsidx
+/GorillaCars/.vs
+GorillaCars/.vs/GorillaCars/v17/DocumentLayout.json
+GorillaCars/.vs/ProjectEvaluation/gorillacars.metadata.v7.bin
+GorillaCars/.vs/ProjectEvaluation/gorillacars.projects.v7.bin
+GorillaCars/.vs/ProjectEvaluation/gorillacars.strings.v8.bin
+GorillaCars/.vs/GorillaCars/v17/DocumentLayout.json
+GorillaCars/.vs/GorillaCars/v17/.suo
+*.props

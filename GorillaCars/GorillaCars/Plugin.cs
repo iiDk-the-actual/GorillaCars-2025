@@ -160,7 +160,7 @@ namespace GorillaCars
 
         void Update()
         {
-            if (inRoom && Time.time > lastTime + Tick && PhotonNetwork.InRoom)
+            if (PhotonNetwork.InRoom && Time.time > lastTime + Tick && PhotonNetwork.InRoom)
             {   
                 lastTime = Time.time;
                 var ht = PhotonNetwork.LocalPlayer.CustomProperties;
