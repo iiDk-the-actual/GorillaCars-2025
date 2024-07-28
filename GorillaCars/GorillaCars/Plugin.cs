@@ -128,9 +128,12 @@ namespace GorillaCars
             BoxCollider[] Colliders = CarGameObject.GetComponentsInChildren<BoxCollider>();
             for (int i = 0; i < Colliders.Length; i++)
             {
-                Colliders[i].gameObject.AddComponent<ButtonManager>();
+                if (Colliders[i].isTrigger)
+                {
+                    Colliders[i].gameObject.AddComponent<ButtonManager>();
+                }
             }
-            
+
             // shits hittin flips again -wryser
             MeshCollider[] a = CarGameObject.GetComponentsInChildren<MeshCollider>();
             for(int i = 0; i < a.Length; i++)

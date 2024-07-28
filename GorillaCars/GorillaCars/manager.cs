@@ -46,7 +46,7 @@ namespace GorillaCars
 
         GameObject WhatTheFuckIsThisCube; // copyrighted by biotest05
 
-        bool setup;
+        //bool setup; (commented out because its never used)
         bool guiEnabled;
 
         void Awake()
@@ -95,14 +95,14 @@ namespace GorillaCars
         {
             Plugin.Instance.CarGameObject.SetActive(true);
 
-            setup = true;
+            // setup = true;
         }
 
         public void UndoMySetup()
         {
             Plugin.Instance.CarGameObject.SetActive(false);
 
-            setup = false;
+            // setup = false;
         }
 
         public void FixedUpdate()
