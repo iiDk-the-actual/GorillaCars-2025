@@ -6,7 +6,6 @@ using System.IO;
 using System.Reflection;
 using UnityEngine;
 using UnityEngine.Assertions;
-using Utilla;
 using Photon.Pun;
 using Photon.Realtime;
 using System.Collections.Generic;
@@ -67,8 +66,6 @@ namespace GorillaCars
         }
     }
 
-    [ModdedGamemode]
-    [BepInDependency("org.legoandmars.gorillatag.utilla", "1.5.0")]
     [BepInPlugin(PluginInfo.GUID, PluginInfo.Name, PluginInfo.Version)]
     public class Plugin : BaseUnityPlugin
     {
@@ -165,20 +162,6 @@ namespace GorillaCars
                     ht.AddOrUpdate("carRotZ", CarGameObject.transform.rotation.z);
                 }
             }
-        }
-
-        [ModdedGamemodeJoin]
-        public void OnJoin(string gamemode)
-        {
-            manager.Instance.Setup();
-            inRoom = true;
-        }
-
-        [ModdedGamemodeLeave]
-        public void OnLeave(string gamemode)
-        {
-            manager.Instance.UndoMySetup();
-            inRoom = false;
         }
     }
 }
