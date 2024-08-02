@@ -3,10 +3,14 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using Valve.VR;
 using UnityEngine.InputSystem;
+using Photon.Pun;
+using GorillaNetworking;
+using ExitGames.Client.Photon;
+using GorillaCars.Patches;
 
 namespace GorillaCars
 {
-    public class manager : MonoBehaviour
+    public class manager : MonoBehaviourPunCallbacks
     {
         public static manager Instance { get; set; }
 
@@ -27,8 +31,6 @@ namespace GorillaCars
 
         public float acclration = 500f;
         public float breakforce = 200f;
-        public float curacceleration = 500f;
-        public float curbreakforce = 200f;
 
         Vector2 leftStick;
         bool Drving = true;
@@ -44,10 +46,15 @@ namespace GorillaCars
         Transform rearLeftWheel;
         Transform rearRightWheel;
 
-        GameObject WhatTheFuckIsThisCube; // copyrighted by biotest05
+        public GameObject driver;
+        public GameObject passenger;
+        public GameObject backdriver;
+        public GameObject backpassenger;
         GameObject PowerOnCar;
         GameObject EngineStart;
-
+        GameObject EngineStop;
+        GameObject EngineLoop;
+        CustomCarDescripter CarDescriptor;
         //bool setup; (commented out because its never used)
         bool guiEnabled = true;
 
@@ -55,33 +62,58 @@ namespace GorillaCars
         {
             Instance = this;
         }
-
+        public override void OnJoinedRoom()
+        {
+            new GameObject("networker", typeof(NetThingyWOOHOOO));
+        }
         public void Setup2()
         {
             try
             {
-                frontleft = transform.FindChildRecursive("FrontLeftCollider").GetComponent<WheelCollider>();
-                frontLeftWheel = transform.FindChildRecursive("wheel_front_left");
+                CarDescriptor = GetComponentInParent<CustomCarDescripter>();
+                frontleft = CarDescriptor.LeftFront;
+                frontLeftWheel = CarDescriptor.LeftFrontwheel.transform;
 
-                frontright = transform.FindChildRecursive("FrontRightCollider").GetComponent<WheelCollider>();
-                frontRightWheel = transform.FindChildRecursive("wheel_front_right");
+                frontright = CarDescriptor.RightFront;
+                frontRightWheel = CarDescriptor.RightFrontwheel.transform;
 
-                backleft = transform.FindChildRecursive("BackLeftCollider").GetComponent<WheelCollider>();
-                rearLeftWheel = transform.FindChildRecursive("wheel_rear_left");
+                backleft = CarDescriptor.RearLeft;
+                rearLeftWheel = CarDescriptor.RearLeftwheel.transform;
 
-                backright = transform.FindChildRecursive("BackRightCollider").GetComponent<WheelCollider>();
-                rearRightWheel = transform.FindChildRecursive("wheel_rear_right");
+                backright = CarDescriptor.RearRight;
+                rearRightWheel = CarDescriptor.RearLeftwheel.transform;
+
+
             }
             catch
             {
                 Debug.LogError("the wheel colliders are shit!!");
             }
+            try
+            {
+                acclration = CarDescriptor.accleractionforce;
+                breakforce = CarDescriptor.breakforce;
+                driver = CarDescriptor.DriverSeat;
+                passenger = CarDescriptor.PassengerSeat;
+                backdriver = CarDescriptor.BackDriverSide;
+                backpassenger = CarDescriptor.BackPassengerSide;
 
-            WhatTheFuckIsThisCube = Plugin.Instance.CarGameObject.transform.Find("Cube").gameObject;
-            WhatTheFuckIsThisCube.transform.localPosition = new Vector3(-0.3969f, -0.74f, 0.481f);
+                CarDescriptor.DoorDriverSeat.name = "DriverSeat";
+                CarDescriptor.DoorPassengerSeat.name = "PassengerSeat";
+                CarDescriptor.DoorBackDriverSide.name = "BackDriverSeat";
+                CarDescriptor.DoorBackPassengerSide.name = "BackPassengerSeat";
 
-            PowerOnCar = Plugin.Instance.CarGameObject.transform.FindChildRecursive("PowerOnCar").gameObject;
-            EngineStart = Plugin.Instance.CarGameObject.transform.FindChildRecursive("Engine Start").gameObject;
+                PowerOnCar = CarDescriptor.poweroncar;
+                PowerOnCar.name = "PowerOnCar";
+                EngineStart = CarDescriptor.EngineStart.gameObject;
+                EngineStop = CarDescriptor.EngineStop.gameObject;
+                EngineLoop = CarDescriptor.EngineLoop.gameObject;
+
+            }
+            catch
+            {
+                Debug.Log("SKILL ISSUE");
+            }
 
             try
             {
@@ -112,6 +144,7 @@ namespace GorillaCars
 
         public void FixedUpdate()
         {
+
             if (raycastsphere == null)
                 Setup2();
             if (GorillaLocomotion.Player.Instance != null && Physics.Raycast(GorillaLocomotion.Player.Instance.leftControllerTransform.position, GorillaLocomotion.Player.Instance.leftControllerTransform.forward, out RaycastHit hit, 100))
@@ -127,9 +160,9 @@ namespace GorillaCars
         {
             if (ControllerInputPoller.instance.leftControllerPrimaryButton)
             {
-                Plugin.Instance.CarGameObject.transform.position = raycastsphere.transform.position + new Vector3(0, 1.5f, 0);
-                Plugin.Instance.CarGameObject.transform.localRotation = Quaternion.Euler(new Vector3(leftStick.x, 0, 0));
-                Plugin.Instance.CarGameObject.GetComponent<Rigidbody>().velocity = Vector3.zero;
+                transform.position = raycastsphere.transform.position + new Vector3(0, 1.5f, 0);
+                transform.localRotation = Quaternion.Euler(new Vector3(0, 0, 0));
+                GetComponent<Rigidbody>().velocity = Vector3.zero;
             }
             if (Plugin.IsSteamVr)
             {
@@ -139,33 +172,32 @@ namespace GorillaCars
             {
                 ControllerInputPoller.instance.leftControllerDevice.TryGetFeatureValue(UnityEngine.XR.CommonUsages.primary2DAxis, out leftStick);
             }
-            Plugin.Instance.Wheel.transform.rotation = Quaternion.Euler(0, 0, GorillaTagger.Instance.leftHandTransform.position.x * 360);
 
             if (sitting)
             {
-                GorillaTagger.Instance.rigidbody.drag = 60000;
-                GorillaTagger.Instance.mainCamera.transform.parent.transform.position = WhatTheFuckIsThisCube.transform.position;
-                GorillaTagger.Instance.mainCamera.transform.parent.rotation = WhatTheFuckIsThisCube.transform.rotation;
+                GorillaLocomotion.Player.Instance.bodyCollider.attachedRigidbody.drag = 6000f;
+                GorillaTagger.Instance.mainCamera.transform.parent.transform.position = driver.transform.position;
+                GorillaTagger.Instance.mainCamera.transform.parent.rotation = driver.transform.rotation;
             }
-            else
+            else if (!sitting)
             {
-                GorillaTagger.Instance.rigidbody.drag = 0;
+                GorillaLocomotion.Player.Instance.bodyCollider.attachedRigidbody.drag = 0f;
             }
             if (Drving)
             {
-                backleft.motorTorque = ControllerInputPoller.instance.leftControllerIndexFloat * 700;
-                backright.motorTorque = ControllerInputPoller.instance.leftControllerIndexFloat * 700;
+                backleft.motorTorque = ControllerInputPoller.instance.leftControllerIndexFloat * acclration;
+                backright.motorTorque = ControllerInputPoller.instance.leftControllerIndexFloat * acclration;
             }
             else if (!Drving)
             {
-                backleft.motorTorque = -ControllerInputPoller.instance.leftControllerIndexFloat * 700;
-                backright.motorTorque = -ControllerInputPoller.instance.leftControllerIndexFloat * 700;
+                backleft.motorTorque = -ControllerInputPoller.instance.leftControllerIndexFloat * acclration;
+                backright.motorTorque = -ControllerInputPoller.instance.leftControllerIndexFloat * acclration;
             }
 
-            frontleft.brakeTorque = ControllerInputPoller.instance.rightControllerGripFloat * 200;
-            frontright.brakeTorque = ControllerInputPoller.instance.rightControllerGripFloat * 200;
-            backleft.brakeTorque = ControllerInputPoller.instance.leftControllerGripFloat * 200;
-            backright.brakeTorque = ControllerInputPoller.instance.leftControllerGripFloat * 200;
+            frontleft.brakeTorque = ControllerInputPoller.instance.rightControllerGripFloat * breakforce;
+            frontright.brakeTorque = ControllerInputPoller.instance.rightControllerGripFloat * breakforce;
+            backleft.brakeTorque = ControllerInputPoller.instance.leftControllerGripFloat * breakforce;
+            backright.brakeTorque = ControllerInputPoller.instance.leftControllerGripFloat * breakforce;
 
             frontleft.steerAngle = leftStick.x * 35f;
             frontright.steerAngle = leftStick.x * 35f;
@@ -183,24 +215,11 @@ namespace GorillaCars
             wheel.transform.rotation = wheelrot;
         }
 
-        void OnGUI()
-        {
-            if (guiEnabled)
-            {
-                GUILayout.Label("garn47");
-                GUILayout.BeginArea(new Rect(500, 10, Screen.width - 500, 500));
-                GUILayout.Label("frontL wheel motorTorque: " + frontleft.motorTorque.ToString());
-                GUILayout.Label("frontR wheel motorTorque: " + frontright.motorTorque.ToString());
-                GUILayout.Label("backL wheel motorTorque: " + backleft.motorTorque.ToString());
-                GUILayout.Label("backR wheel motorTorque: " + backright.motorTorque.ToString());
-                GUILayout.EndArea();
-            }
-        }
         public void clicked(string BtnName)
         {
             switch (BtnName)
             {
-                case "door_lf":
+                case "DriverSeat":
                     if (touchTime + debounceTime >= Time.time)
                     {
                         if (!sitting)
@@ -212,7 +231,16 @@ namespace GorillaCars
                                 GorillaLocomotion.Player.Instance.locomotionEnabledLayers = layerMask;
                                 GorillaLocomotion.Player.Instance.bodyCollider.isTrigger = true;
                                 GorillaLocomotion.Player.Instance.headCollider.isTrigger = true;
-                                GorillaTagger.Instance.mainCamera.transform.parent.rotation = WhatTheFuckIsThisCube.transform.rotation;
+
+
+                                if (PhotonNetwork.LocalPlayer.CustomProperties != null)
+                                {
+                                    var HT = new ExitGames.Client.Photon.Hashtable();
+                                    HT.AddOrUpdate("Sitting", true);
+                                    PhotonNetwork.SetPlayerCustomProperties(HT);
+
+                                }
+
                             }
                         }
                         else if (sitting)
@@ -224,13 +252,24 @@ namespace GorillaCars
                                 GorillaLocomotion.Player.Instance.locomotionEnabledLayers = baseMask;
                                 GorillaLocomotion.Player.Instance.bodyCollider.isTrigger = false;
                                 GorillaLocomotion.Player.Instance.headCollider.isTrigger = false;
-                                Patches.TeleportPatch.TeleportPlayer(Plugin.Instance.CarGameObject.transform.position + (Vector3.up * 2), Plugin.Instance.CarGameObject.transform.rotation.x, true);
+
+                            }
+                            if (PhotonNetwork.LocalPlayer.CustomProperties != null)
+                            {
+                                var HT = new ExitGames.Client.Photon.Hashtable();
+                                HT.AddOrUpdate("Sitting", false);
+                                PhotonNetwork.SetPlayerCustomProperties(HT);
+
                             }
                         }
-                    } 
-                    touchTime = Time.time;
 
+
+
+
+                    }
+                    touchTime = Time.time;
                     break;
+
                 case "PowerOnCar":
                     if (touchTime1 + debounceTime1 >= Time.time)
                     {
@@ -239,11 +278,15 @@ namespace GorillaCars
                             IsCarOn = true;
                             PowerOnCar.GetComponent<MeshRenderer>().material.color = Color.green;
                             EngineStart.GetComponent<AudioSource>().Play();
+                            EngineLoop.GetComponent<AudioSource>().Play();
                         }
                         else
                         {
                             IsCarOn = false;
                             PowerOnCar.GetComponent<MeshRenderer>().material.color = Color.red;
+                            EngineLoop.GetComponent<AudioSource>().Stop();
+                            EngineStart.GetComponent<AudioSource>().Stop();
+                            EngineStop.GetComponent<AudioSource>().Play();
                         }
                     }
                     touchTime1 = Time.time;

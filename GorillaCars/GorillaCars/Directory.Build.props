@@ -4,7 +4,7 @@
 		<OculusPath>C:\Program Files\Oculus\Software\Software\another-axiom-gorilla-tag</OculusPath>
 		<OculusPluginsPath>$(OculusPath)\BepInEx\plugins</OculusPluginsPath>
 
-		<SteamPath>C:\Program Files (x86)\Steam\steamapps\common\Gorilla Tag</SteamPath>
+		<SteamPath>E:\steam\steamapps\common\Gorilla Tag</SteamPath>
 		<SteamPluginsPath>$(SteamPath)\BepInEx\plugins</SteamPluginsPath>
 
 		<GameAssemblyPath>$(SteamPath)\Gorilla Tag_Data\Managed</GameAssemblyPath>

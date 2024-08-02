@@ -56,13 +56,12 @@ namespace GorillaCars.Patches
             return true;
         }
 
-        internal static void TeleportPlayer(Vector3 destinationPosition, float destinationRotation, bool killVelocity = false)
+        internal static void TeleportPlayer(Vector3 destinationPosition, bool killVelocity = false)
         {
             if (_isTeleporting)
                 return;
             _killVelocity = killVelocity;
             _teleportPosition = destinationPosition;
-            _teleportRotation = destinationRotation;
             _isTeleporting = true;
             _rotate = true;
         }
