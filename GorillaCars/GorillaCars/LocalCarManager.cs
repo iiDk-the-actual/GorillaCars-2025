@@ -10,9 +10,9 @@ using GorillaCars.Patches;
 
 namespace GorillaCars
 {
-    public class manager : MonoBehaviourPunCallbacks
+    public class LocalCarManager : MonoBehaviourPunCallbacks
     {
-        public static manager Instance { get; set; }
+        public static LocalCarManager Instance { get; set; }
 
         bool IsCarOn;
 
@@ -50,10 +50,12 @@ namespace GorillaCars
         public GameObject passenger;
         public GameObject backdriver;
         public GameObject backpassenger;
+
         GameObject PowerOnCar;
         GameObject EngineStart;
         GameObject EngineStop;
         GameObject EngineLoop;
+
         CustomCarDescripter CarDescriptor;
         //bool setup; (commented out because its never used)
         bool guiEnabled = true;
@@ -64,7 +66,7 @@ namespace GorillaCars
         }
         public override void OnJoinedRoom()
         {
-            new GameObject("networker", typeof(NetThingyWOOHOOO));
+            DontDestroyOnLoad(new GameObject("CarNetworkManager", typeof(NetWorkManager)));
         }
         public void Setup2()
         {
