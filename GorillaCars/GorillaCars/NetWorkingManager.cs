@@ -3,111 +3,165 @@ using Photon.Pun;
 using UnityEngine;
 using Photon.Realtime;
 using System.Collections.Generic;
-using ExitGames.Client.Photon;
-public class NetWorkManager : MonoBehaviourPunCallbacks
+
+public class NetThingyWOOHOOO : MonoBehaviourPunCallbacks
 {
-    public List<PlayerCarWrapped> PlayerAndCar = new List<PlayerCarWrapped>();
-
-    public class PlayerCarWrapped
-    {
-        public Player playerWithCar;
-        public GameObject Car;
-        public VRRig rig;
-
-        public void UpdateCarState()
-        {
-            Hashtable Table = playerWithCar.CustomProperties;
-            if ((bool)Table[GorillaCars.Const.SittingProp])
-            {
-                Car.transform.parent = rig.transform;
-                Car.transform.localPosition = new Vector3(0.2f, -0.9f, -0.3f);
-                Car.transform.localRotation = Quaternion.Euler(0f, 359.6664f, 0f);
-                Destroy(Car.transform.GetChild(0).GetComponent<Rigidbody>());
-            }
-            else
-            {
-                Car.transform.parent = null;
-            }
-        }
-
-        public void GetRidOfME()
-        {
-            Destroy(Car);
-        }
-    }
-
+    public Dictionary<Player, GameObject> playerWithCarYeah = new Dictionary<Player, GameObject>();
     public override void OnJoinedRoom()
     {
-        foreach (Player player in PhotonNetwork.PlayerList)
+        try
         {
-            SetUpCar(player);
-        }
-    }
 
-    void SetUpCar(Player player)
-    {
-        
-        if (player.CustomProperties.ContainsKey(Const.SittingProp) && player != PhotonNetwork.LocalPlayer)
-        {
-            if (Plugin.Instance.CarGameObject.name == (string)player.CustomProperties[Const.CarNameProp])
+            foreach (Photon.Realtime.Player player in PhotonNetwork.PlayerList)
             {
-                GameObject PlayerCar = Instantiate(Plugin.Instance.CarGameObject);
-                PlayerCar.transform.position = new Vector3(-64.4182f, 2.3273f, -71.1818f);
-                PlayerCar.name = player.NickName + "'S: Car";
 
-                Destroy(PlayerCar.transform.GetChild(0).GetComponent<Rigidbody>());
-                Destroy(PlayerCar.GetComponentInChildren<LocalCarManager>());
-                var rig = GorillaGameManager.StaticFindRigForPlayer(player);
-                PlayerCarWrapped pcw = new PlayerCarWrapped()
+                ExitGames.Client.Photon.Hashtable hashthingy = player.CustomProperties;
+                if (hashthingy.ContainsKey("Sitting") && player != PhotonNetwork.LocalPlayer)
                 {
-                    playerWithCar = player,
-                    Car = PlayerCar,
-                    rig = rig
-                };
-                PlayerAndCar.Add(pcw);
-                pcw.UpdateCarState();
+                    if (Plugin.Instance.CarGameObject.name == (string)hashthingy["carname"])
+                    {
+                        GameObject asset = Plugin.Instance.CarGameObject;
+                        Debug.Log(player.ToString());
+                        GameObject garn = Instantiate(asset);
+                        garn = asset.transform.gameObject;
+                        garn.transform.position = new Vector3(-64.4182f, 2.3273f, -71.1818f);
+                        garn.name = player.NickName + "'S: Car";
+
+                        Destroy(garn.GetComponent<Rigidbody>());
+                        Destroy(garn.GetComponent<manager>());
+                        var rig = GorillaGameManager.StaticFindRigForPlayer(player);
+                        playerWithCarYeah.Add(player, garn);
+
+                        if ((bool)hashthingy["Sitting"])
+                        {
+                            garn.transform.parent = rig.transform;
+                            garn.transform.localPosition = new Vector3(0.2f, -0.9f, -0.3f);
+                            garn.transform.localRotation = Quaternion.Euler(0f, 359.6664f, 0f);
+                        }
+                        else
+                        {
+                            garn.transform.parent = null;
+                        }
+
+                    }
+
+
+                }
             }
         }
+        catch
+        {
+            Debug.Log("error on joined room");
+        }
+
+
+
     }
     void OnDestroy()
     {
-        foreach (PlayerCarWrapped PlayerWCar in PlayerAndCar)
+        foreach (GameObject cars in playerWithCarYeah.Values)
         {
-            PlayerWCar.GetRidOfME();
+            Destroy(cars);
         }
     }
-   public override void OnPlayerEnteredRoom(Player newPlayer)
-   {
-        SetUpCar(newPlayer);
-   }
+    public override void OnPlayerEnteredRoom(Player newPlayer)
+    {
+        try
+        {
+            ExitGames.Client.Photon.Hashtable hashthingy = newPlayer.CustomProperties;
+            if (hashthingy.ContainsKey("Sitting"))
+            {
+                if (newPlayer != PhotonNetwork.LocalPlayer)
+                {
+                    if (Plugin.Instance.CarGameObject.name == (string)hashthingy["carname"])
+                    {
+                        GameObject asset = Plugin.Instance.CarGameObject;
+                        GameObject garn = Instantiate(asset);
+                        garn = asset.transform.GetChild(0).gameObject;
+
+                        garn.transform.position = new Vector3(-64.4182f, 2.3273f, -71.1818f);
+                        garn.name = newPlayer.NickName + "'S: Car";
+                        Destroy(garn.GetComponent<Rigidbody>());
+                        Destroy(garn.GetComponent<manager>());
+                        var rig = GorillaGameManager.StaticFindRigForPlayer(newPlayer);
+                        playerWithCarYeah.Add(newPlayer, garn);
+                        if ((bool)hashthingy["Sitting"])
+                        {
+                            garn.transform.parent = rig.transform;
+                            garn.transform.localPosition = new Vector3(0.2f, -0.9f, -0.3f);
+                            garn.transform.localRotation = Quaternion.Euler(0f, 359.6664f, 0f);
+                        }
+                        else
+                        {
+                            garn.transform.parent = null;
+                        }
+
+                    }
+                }
+
+            }
+        }
+        catch
+        {
+            Debug.Log("ERROR CASUED AT OnPlayerEnteredRoom");
+        }
+
+
+
+
+    }
 
     public override void OnPlayerLeftRoom(Player otherPlayer)
     {
-        foreach (PlayerCarWrapped PlayerWCar in PlayerAndCar)
+        try
         {
-            if (PlayerWCar.playerWithCar == otherPlayer)
+            if (playerWithCarYeah.ContainsKey(otherPlayer))
             {
-                PlayerWCar.GetRidOfME();
-                PlayerAndCar.Remove(PlayerWCar);
+                Destroy(playerWithCarYeah[otherPlayer]);
+                playerWithCarYeah.Remove(otherPlayer);
             }
         }
+        catch
+        {
+            Debug.Log("bruh");
+        }
+
     }
     public override void OnLeftRoom()
     {
         Destroy(gameObject);
     }
-    public override void OnPlayerPropertiesUpdate(Player targetPlayer, Hashtable changedProps)
+    public override void OnPlayerPropertiesUpdate(Player targetPlayer, ExitGames.Client.Photon.Hashtable changedProps)
     {
-        if (changedProps.ContainsKey(Const.SittingProp))
+        try
         {
-            foreach (PlayerCarWrapped PlayerWCar in PlayerAndCar)
+            if (targetPlayer != PhotonNetwork.LocalPlayer)
             {
-                if (PlayerWCar.playerWithCar == targetPlayer)
+
+                var rig = GorillaGameManager.StaticFindRigForPlayer(targetPlayer);
+                GameObject garn = playerWithCarYeah[targetPlayer];
+                if ((bool)changedProps["Sitting"] != null)
                 {
-                    PlayerWCar.UpdateCarState();
+                    if ((bool)changedProps["Sitting"])
+                    {
+                        garn.transform.parent = rig.transform;
+                        garn.transform.localPosition = new Vector3(0.2f, -0.9f, -0.3f);
+                        garn.transform.localRotation = Quaternion.Euler(0f, 359.6664f, 0f);
+                    }
+                    else
+                    {
+                        garn.transform.parent = null;
+                    }
                 }
             }
         }
+        catch
+        {
+            Debug.Log("ERROR CASUED AT ONPLAYERPROPSUPDATE");
+        }
+
+
+
     }
 
 }

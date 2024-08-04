@@ -19,7 +19,7 @@ namespace GorillaCars
 
         public override void ButtonActivation()
         {
-            LocalCarManager.Instance.clicked(this.gameObject.name);
+            manager.Instance.clicked(this.gameObject.name);
         }
     }
 }

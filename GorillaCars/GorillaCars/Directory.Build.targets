@@ -2,6 +2,8 @@
 <Project>
 	<Target Name="CopyToPlugins" AfterTargets="Build" Condition="'$(CI)'!='TRUE'">
 		<Copy SourceFiles="$(TargetPath)" DestinationFiles="$(OculusPluginsPath)\$(ProjectName)\$(TargetFileName)" />
+		<Copy SourceFiles="$(TargetPath)" DestinationFiles="$(SteamPluginsPath)\$(ProjectName)\$(TargetFileName)" />
 		<Message Text="Copied to Oculus ($(OculusPluginsPath)\$(ProjectName)\$(TargetFileName))" Importance="high"/>
+		<Message Text="Copied to Steam ($(SteamPluginsPath)\$(ProjectName)\$(TargetFileName))" Importance="high"/>
 	</Target>
 </Project>

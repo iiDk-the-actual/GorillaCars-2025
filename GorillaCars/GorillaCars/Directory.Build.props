@@ -7,8 +7,8 @@
 		<SteamPath>E:\steam\steamapps\common\Gorilla Tag</SteamPath>
 		<SteamPluginsPath>$(SteamPath)\BepInEx\plugins</SteamPluginsPath>
 
-		<GameAssemblyPath>$(OculusPath)\Gorilla Tag_Data\Managed</GameAssemblyPath>
-		<BepInExAssemblyPath>$(OculusPath)\BepInEx\core</BepInExAssemblyPath>
+		<GameAssemblyPath>$(SteamPath)\Gorilla Tag_Data\Managed</GameAssemblyPath>
+		<BepInExAssemblyPath>$(SteamPath)\BepInEx\core</BepInExAssemblyPath>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(CI)'=='TRUE'">
 		<GameAssemblyPath>.\Libs</GameAssemblyPath>
