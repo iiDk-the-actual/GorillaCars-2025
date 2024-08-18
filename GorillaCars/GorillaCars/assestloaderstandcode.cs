@@ -30,22 +30,9 @@ namespace GorillaCars
             Name = transform.FindChildRecursive("Name").GetComponent<TextMeshPro>();
             Author = transform.FindChildRecursive("Author").GetComponent<TextMeshPro>();
             Description = transform.FindChildRecursive("Description").GetComponent<TextMeshPro>();
-        }
-      
-        public void Update()
-        {
-            try
-            {
-                Name.text = Plugin.Instance.carsGameobjs.ElementAt(index).GetComponent<CustomCarDescripter>().Name;
-                Author.text = Plugin.Instance.carsGameobjs.ElementAt(index).GetComponent<CustomCarDescripter>().Author;
-                Description.text = Plugin.Instance.carsGameobjs.ElementAt(index).GetComponent<CustomCarDescripter>().Description;
-            }
-            catch 
-            {
-                Debug.Log("error with carloader?");
-            }
-           
-          
+            Name.text = Plugin.Instance.carsGameobjs.ElementAt(index).GetComponent<CustomCarDescripter>().Name;
+            Author.text = Plugin.Instance.carsGameobjs.ElementAt(index).GetComponent<CustomCarDescripter>().Author;
+            Description.text = Plugin.Instance.carsGameobjs.ElementAt(index).GetComponent<CustomCarDescripter>().Description;
         }
 
         public void Clicked(string btnname)
@@ -66,6 +53,9 @@ namespace GorillaCars
                             }
                         }
                         touchTime = Time.time;
+                        Name.text = Plugin.Instance.carsGameobjs.ElementAt(index).GetComponent<CustomCarDescripter>().Name;
+                        Author.text = Plugin.Instance.carsGameobjs.ElementAt(index).GetComponent<CustomCarDescripter>().Author;
+                        Description.text = Plugin.Instance.carsGameobjs.ElementAt(index).GetComponent<CustomCarDescripter>().Description;
                     }
                     catch
                     {
@@ -86,6 +76,9 @@ namespace GorillaCars
                             }
                         }
                         touchTime1 = Time.time;
+                        Name.text = Plugin.Instance.carsGameobjs.ElementAt(index).GetComponent<CustomCarDescripter>().Name;
+                        Author.text = Plugin.Instance.carsGameobjs.ElementAt(index).GetComponent<CustomCarDescripter>().Author;
+                        Description.text = Plugin.Instance.carsGameobjs.ElementAt(index).GetComponent<CustomCarDescripter>().Description;
                     }
                     catch
                     {
@@ -113,16 +106,12 @@ namespace GorillaCars
                             var HT = new ExitGames.Client.Photon.Hashtable();
                             HT.AddOrUpdate("CarName", Plugin.Instance.CarGameObject.name);
                             PhotonNetwork.SetPlayerCustomProperties(HT);
-
                         }
                     }
                     catch
                     {
                         Debug.Log("error with confirm?");
                     }
-                   
-                   
-
                     break;
             }
 

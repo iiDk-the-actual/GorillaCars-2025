@@ -34,7 +34,7 @@ namespace GorillaCars
                     }
                     catch (Exception e)
                     {
-                        Debug.Log("get a car bro :skull:");
+                        Debug.Log("get a car bro 💀");
                     }
                     if (p.CustomProperties["sitting"] != null)
                     {
@@ -108,8 +108,7 @@ namespace GorillaCars
         {
             if (!targetPlayer.IsLocal)
             {
-               
-                if (changedProps["Sitting"] != null)
+                if (changedProps.TryGetValue("Sitting", out object yippeitworks))
                 {
                     var rig = GorillaGameManager.StaticFindRigForPlayer(targetPlayer);
                     if ((bool)changedProps["Sitting"])

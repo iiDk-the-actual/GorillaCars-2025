@@ -10,3 +10,4 @@ GorillaCars/.vs/GorillaCars/v17/DocumentLayout.json
 GorillaCars/.vs/GorillaCars/v17/.suo
 *.props
 *.v2
+GorillaCars/GorillaCars/Directory.Build.props
