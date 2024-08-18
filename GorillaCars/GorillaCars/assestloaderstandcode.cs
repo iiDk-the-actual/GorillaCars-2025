@@ -33,6 +33,25 @@ namespace GorillaCars
             Name.text = Plugin.Instance.carsGameobjs.ElementAt(index).GetComponent<CustomCarDescripter>().Name;
             Author.text = Plugin.Instance.carsGameobjs.ElementAt(index).GetComponent<CustomCarDescripter>().Author;
             Description.text = Plugin.Instance.carsGameobjs.ElementAt(index).GetComponent<CustomCarDescripter>().Description;
+
+            foreach (GameObject cars in Plugin.Instance.carsGameobjs)
+            {
+                cars.GetComponentInChildren<Rigidbody>().isKinematic = true;
+                cars.transform.position = Vector3.zero;
+                cars.transform.GetChild(0).position = Vector3.zero;
+
+            }
+            Plugin.Instance.carsGameobjs.ElementAt(index).GetComponentInChildren<Rigidbody>().isKinematic = false;
+            Plugin.Instance.carsGameobjs.ElementAt(index).GetComponentInChildren<Rigidbody>().velocity = Vector3.zero;
+            Plugin.Instance.carsGameobjs.ElementAt(index).transform.position = Vector3.zero;
+            Plugin.Instance.carsGameobjs.ElementAt(index).transform.GetChild(0).position = new Vector3(-64.4182f, 2.3273f, -71.1818f);
+            Plugin.Instance.CarGameObject = Plugin.Instance.carsGameobjs.ElementAt(index);
+            if (PhotonNetwork.LocalPlayer.CustomProperties != null)
+            {
+                var HT = new ExitGames.Client.Photon.Hashtable();
+                HT.AddOrUpdate("CarName", Plugin.Instance.CarGameObject.name);
+                PhotonNetwork.SetPlayerCustomProperties(HT);
+            }
         }
 
         public void Clicked(string btnname)

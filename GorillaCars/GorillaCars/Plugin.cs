@@ -40,21 +40,7 @@ namespace GorillaCars
         public string[] cars;
         GameObject raycastsphere;
         public List<GameObject> carsGameobjs = new List<GameObject>();
-        private void OnGUI()
-        {
-            GUILayout.Label("Custom Properties"); // wryser prob added this
-            GUILayout.BeginArea(new Rect(10, 10, Screen.width, 500));
-            if (PhotonNetwork.InRoom)
-            {
-                GUILayout.BeginVertical();
-                foreach (Photon.Realtime.Player player in PhotonNetwork.PlayerList)
-                {
-                    GUILayout.Label(player.NickName + player.CustomProperties.ToString());
-                }
-                GUILayout.EndVertical();
-            }
-            GUILayout.EndArea();
-        }
+
 
         void Awake()
         {
