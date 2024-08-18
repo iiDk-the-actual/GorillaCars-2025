@@ -6,11 +6,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="assets\car" />
+    <None Remove="assets\assetloader" />
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="assets\car" />
+    <EmbeddedResource Include="assets\assetloader" />
   </ItemGroup>
 
   <ItemGroup>
@@ -25,6 +25,9 @@
     </Reference>
     <Reference Include="BakeryRuntimeAssembly">
       <HintPath>$(GameAssemblyPath)\BakeryRuntimeAssembly.dll</HintPath>
+    </Reference>
+    <Reference Include="BananaOS">
+      <HintPath>E:\steam\steamapps\common\Gorilla Tag\BepInEx\plugins\BananaOS.dll</HintPath>
     </Reference>
     <Reference Include="BepInEx">
       <HintPath>$(BepInExAssemblyPath)\BepInEx.dll</HintPath>
@@ -82,6 +85,9 @@
     </Reference>
     <Reference Include="Unity.InputSystem">
       <HintPath>$(GameAssemblyPath)\Unity.InputSystem.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.TextMeshPro">
+      <HintPath>E:\steam\steamapps\common\Gorilla Tag\Gorilla Tag_Data\Managed\Unity.TextMeshPro.dll</HintPath>
     </Reference>
     <Reference Include="Unity.Timeline">
       <HintPath>$(GameAssemblyPath)\Unity.Timeline.dll</HintPath>
