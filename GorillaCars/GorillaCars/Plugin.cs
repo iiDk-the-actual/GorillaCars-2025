@@ -167,47 +167,44 @@ namespace GorillaCars
             Debug.Log("Made manager");
 
             Debug.Log("About to setup2");
-            try
-            {
-                
-            }
-            catch
-            {
-                Debug.Log("cars may have no manager??");
-            }
 
             Debug.Log("Setup2");
             gameObject.AddComponent<Moddedcheck>();
             try
             {
-              
+                var carnameHT = new ExitGames.Client.Photon.Hashtable();
+                carnameHT.AddOrUpdate("CarName", Plugin.Instance.CarGameObject.name);
+                PhotonNetwork.SetPlayerCustomProperties(carnameHT);
             }
             catch
             {
                 Debug.Log("kinda dumb but gotta check");
             }
-
-            if (PhotonNetwork.LocalPlayer.CustomProperties != null)
-            {
                 var HT = new ExitGames.Client.Photon.Hashtable();
                 HT.AddOrUpdate("Sitting", false);
                 PhotonNetwork.SetPlayerCustomProperties(HT);
 
-            }
-            var Networker = new GameObject("NetworkManager", typeof(NetworkingManager));
+            
+           // var Networker = new GameObject("NetworkManager", typeof(NetworkingManager));
+
+
 
         }
         public void spawnsphere()
         {
             raycastsphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
             Destroy(raycastsphere.GetComponent<SphereCollider>());
-            raycastsphere.GetComponent<MeshRenderer>().material.shader = GorillaTagger.Instance.offlineVRRig.mainSkin.GetComponent<SkinnedMeshRenderer>().material.shader;
             raycastsphere.transform.localScale = new Vector3(.1f, .1f, .1f);
         }
         public void FixedUpdate()
         {
+            if (ControllerInputPoller.instance.leftControllerSecondaryButton)
+            {
+                CarGameObject.transform.rotation = Quaternion.Euler(0, 0, 0);
+            }
             try
             {
+
                 if (raycastsphere == null)
                     spawnsphere();
                 if (GorillaLocomotion.Player.Instance != null && Physics.Raycast(GorillaLocomotion.Player.Instance.leftControllerTransform.position, GorillaLocomotion.Player.Instance.leftControllerTransform.forward, out RaycastHit hit, 100))
@@ -219,8 +216,12 @@ namespace GorillaCars
                 }
                 if (ControllerInputPoller.instance.leftControllerPrimaryButton)
                 {
-                    CarGameObject.transform.GetChild(0).position = raycastsphere.transform.position + new Vector3(0, 1.5f, 0);
-                    CarGameObject.transform.GetComponentInChildren<Rigidbody>().velocity = Vector3.zero;
+                    if (!manager.Instance.sitting)
+                    {
+                        CarGameObject.transform.GetChild(0).position = raycastsphere.transform.position + new Vector3(0, 1.5f, 0);
+                        CarGameObject.transform.rotation = Quaternion.Euler(0, 0, 0);
+                        CarGameObject.transform.GetComponentInChildren<Rigidbody>().velocity = Vector3.zero;
+                    }
                 }
             }
             catch

@@ -9,6 +9,7 @@ using ExitGames.Client.Photon;
 using GorillaCars.Patches;
 using TMPro;
 using System.Linq;
+using UnityEngine.XR;
 
 namespace GorillaCars
 {
@@ -23,8 +24,8 @@ namespace GorillaCars
 
         private float touchTime1 = 0f;
         private const float debounceTime1 = 0.25f;
-
-        public bool sitting;
+        
+        public bool sitting = false;
 
         public WheelCollider frontleft;
         public WheelCollider frontright;
@@ -111,7 +112,9 @@ namespace GorillaCars
             {
                 Debug.Log("SKILL ISSUE");
             }
-
+            var HT = new ExitGames.Client.Photon.Hashtable();
+            HT.AddOrUpdate("CarName", Plugin.Instance.CarGameObject.name);
+            PhotonNetwork.SetPlayerCustomProperties(HT);
         }
 
         public void Setup()
@@ -127,8 +130,6 @@ namespace GorillaCars
 
             // setup = false;
         }
-
-       
 
         public void Update()
         {
@@ -153,13 +154,9 @@ namespace GorillaCars
             {
                 
                 GorillaTagger.Instance.gameObject.GetComponent<Rigidbody>().velocity = Vector3.zero;
-               
-
-               
-                GorillaTagger.Instance.mainCamera.transform.parent.rotation = transform.GetChild(0).rotation;
                 GorillaLocomotion.Player.Instance.transform.position = driver.transform.position;
-                GorillaTagger.Instance.gameObject.GetComponent<Rigidbody>().position = driver.transform.position;
-
+               GorillaTagger.Instance.rigidbody.position = Vector3.zero;
+               
             }
             try
             {
@@ -167,6 +164,7 @@ namespace GorillaCars
                 {
                     backleft.motorTorque = ControllerInputPoller.instance.leftControllerIndexFloat * acclration;
                     backright.motorTorque = ControllerInputPoller.instance.leftControllerIndexFloat * acclration;
+
                 }
                 else if (!Drving)
                 {
@@ -218,7 +216,7 @@ namespace GorillaCars
                                 GorillaLocomotion.Player.Instance.locomotionEnabledLayers = layerMask;
                                 GorillaLocomotion.Player.Instance.bodyCollider.isTrigger = true;
                                 GorillaLocomotion.Player.Instance.headCollider.isTrigger = true;
-
+                             
 
                                 if (PhotonNetwork.LocalPlayer.CustomProperties != null)
                                 {
@@ -235,11 +233,11 @@ namespace GorillaCars
                         {
                             if (ControllerInputPoller.instance.rightControllerGripFloat > 0f || ControllerInputPoller.instance.leftControllerGripFloat > 0f)
                             {
-                                GorillaTagger.Instance.mainCamera.transform.parent.rotation = Quaternion.Euler(0f, 47.9593f, 0f);
                                 sitting = false;
                                 GorillaLocomotion.Player.Instance.locomotionEnabledLayers = baseMask;
                                 GorillaLocomotion.Player.Instance.bodyCollider.isTrigger = false;
                                 GorillaLocomotion.Player.Instance.headCollider.isTrigger = false;
+                              
                                 if (PhotonNetwork.LocalPlayer.CustomProperties != null)
                                 {
                                     var HT = new ExitGames.Client.Photon.Hashtable();

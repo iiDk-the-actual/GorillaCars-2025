@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Photon.Pun;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
@@ -22,6 +23,7 @@ namespace GorillaCars
             if (Plugin.Instance.CarGameObject != null)
             {
                 Plugin.Instance.CarGameObject.GetComponent<manager>().clicked(this.gameObject.name);
+            
             }
             
             try

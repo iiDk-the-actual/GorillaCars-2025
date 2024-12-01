@@ -1,4 +1,5 @@
-﻿using GorillaNetworking;
+﻿using GorillaGameModes;
+using GorillaNetworking;
 using Photon.Pun;
 using System;
 using System.Collections;
@@ -7,6 +8,7 @@ using System.Linq;
 using System.Text;
 using TMPro;
 using UnityEngine;
+using static Cinemachine.CinemachineTriggerAction.ActionSettings;
 
 namespace GorillaCars
 {
@@ -46,19 +48,14 @@ namespace GorillaCars
             Plugin.Instance.carsGameobjs.ElementAt(index).transform.position = Vector3.zero;
             Plugin.Instance.carsGameobjs.ElementAt(index).transform.GetChild(0).position = new Vector3(-64.4182f, 2.3273f, -71.1818f);
             Plugin.Instance.CarGameObject = Plugin.Instance.carsGameobjs.ElementAt(index);
-            if (PhotonNetwork.LocalPlayer.CustomProperties != null)
-            {
-                var HT = new ExitGames.Client.Photon.Hashtable();
-                HT.AddOrUpdate("CarName", Plugin.Instance.CarGameObject.name);
-                PhotonNetwork.SetPlayerCustomProperties(HT);
-            }
-        }
 
+
+        }
         public void Clicked(string btnname)
         {
             switch (btnname)
             {
-               
+
                 case "Next":
                     try
                     {
@@ -103,7 +100,7 @@ namespace GorillaCars
                     {
                         Debug.Log("error with Prev?");
                     }
-                   
+
                     break;
                 case "Confirm action":
                     try
@@ -120,12 +117,10 @@ namespace GorillaCars
                         Plugin.Instance.carsGameobjs.ElementAt(index).transform.position = Vector3.zero;
                         Plugin.Instance.carsGameobjs.ElementAt(index).transform.GetChild(0).position = new Vector3(-64.4182f, 2.3273f, -71.1818f);
                         Plugin.Instance.CarGameObject = Plugin.Instance.carsGameobjs.ElementAt(index);
-                        if (PhotonNetwork.LocalPlayer.CustomProperties != null)
-                        {
-                            var HT = new ExitGames.Client.Photon.Hashtable();
-                            HT.AddOrUpdate("CarName", Plugin.Instance.CarGameObject.name);
-                            PhotonNetwork.SetPlayerCustomProperties(HT);
-                        }
+                        var HT = new ExitGames.Client.Photon.Hashtable();
+                        HT.AddOrUpdate("CarName", Plugin.Instance.CarGameObject.name);
+                        PhotonNetwork.SetPlayerCustomProperties(HT);
+
                     }
                     catch
                     {

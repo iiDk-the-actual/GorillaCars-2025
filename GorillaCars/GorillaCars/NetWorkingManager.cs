@@ -4,11 +4,13 @@ using GorillaNetworking;
 using Photon.Pun;
 using Photon.Realtime;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.ConstrainedExecution;
 using System.Text;
 using UnityEngine;
+using UnityEngine.Animations.Rigging;
 using static Mono.Security.X509.X520;
 
 namespace GorillaCars
@@ -16,78 +18,79 @@ namespace GorillaCars
     public class NetworkingManager : MonoBehaviourPunCallbacks
     {
         public Dictionary<Player, GameObject> PlayerList = new Dictionary<Player, GameObject>();
-        
-
         public override void OnJoinedRoom()
         {
-            try
+            foreach (var player in PhotonNetwork.PlayerList)
             {
-                foreach (Player p in PhotonNetwork.PlayerList)
+                var rig = GorillaGameManager.instance.FindPlayerVRRig(player);
+                if (player.CustomProperties.ContainsKey("Sitting") && !player.IsLocal)
                 {
-                    if (!p.IsLocal)
+                    Debug.Log(player.NickName + ": Has Joined Room");
+                    if (player.CustomProperties.TryGetValue("CarName", out object carname))
                     {
-                        try
+                        if (Plugin.Instance.carsGameobjs.Where(obj => obj.name == carname.ToString()).SingleOrDefault())
                         {
-                            if (p.CustomProperties.TryGetValue("Sitting", out object yippeitworks))
-                            {
-                                if (p.CustomProperties.ContainsKey("Sitting"))
-                                {
-                                    PlayerList.Add(p, null);
-                                    Debug.Log(p.CustomProperties.TryGetValue("CarName", out object carname2));
-                                    if (p.CustomProperties.TryGetValue("CarName", out object carname))
-                                    {
-                                        GameObject carobj = Plugin.Instance.carsGameobjs.Where(obj => obj.name == carname.ToString()).SingleOrDefault();
-                                        var car = GameObject.Instantiate(carobj);
-                                        car.name = p.NickName + ": " + carobj.name;
-                                        Destroy(car.GetComponentInChildren<Rigidbody>());
-                                        Destroy(car.GetComponentInChildren<manager>());
-                                        PlayerList.AddOrUpdate(p, car);
-                                        car.transform.position = Plugin.Instance.CarGameObject.transform.position;
-                                    }
-
-                                        
-                                }
-                            }
-                               
+                            GameObject carobj = Plugin.Instance.carsGameobjs.Where(obj => obj.name == carname.ToString()).SingleOrDefault();
+                            var car = GameObject.Instantiate(carobj);
+                            car.name = player.NickName + ": " + carobj.name;
+                            PlayerList.Add(player, car);
+                            car.transform.position = Plugin.Instance.CarGameObject.transform.position;
                         }
-                        catch (Exception e)
-                        {
-                            Debug.Log("get a car bro 💀");
-                        }
-                        if (p.CustomProperties["sitting"] != null)
-                        {
-                            if ((bool)p.CustomProperties["Sitting"])
-                            {
-                                var rig = GorillaGameManager.StaticFindRigForPlayer(p);
-                                foreach (GameObject cars in PlayerList.Values)
-                                {
-
-                                    cars.transform.parent = PlayerList[p].transform;
-                                    cars.transform.GetChild(0).localPosition = new Vector3(-65.1881f, 1.3421f, -71.4834f);
-                                    cars.transform.GetChild(0).localRotation = Quaternion.Euler(0f, 84.4751f, 0f);
-
-                                }
-                            }
-                            else
-                            {
-                                PlayerList[p].transform.parent = null;
-                            }
-                        }
+                    }
+                    if ((bool)player.CustomProperties["Sitting"])
+                    {
+                        PlayerList[player].transform.parent = rig.transform;
+                        PlayerList[player].transform.GetChild(0).localPosition = rig.transform.position;
+                        PlayerList[player].transform.GetChild(0).localRotation = rig.transform.rotation;
 
                     }
-
-
+                    else
+                    {
+                        PlayerList[player].transform.parent = null;
+                    }
+                }
+                else
+                {
+                    Debug.Log("==================================== Player does not have car mod silly ====================================");
                 }
             }
-            catch
+        }
+        public override void OnPlayerEnteredRoom(Player newPlayer)
+        {
+            if (newPlayer.CustomProperties.ContainsKey("Sitting") && !newPlayer.IsLocal)
             {
-                Debug.Log("Error with OnJoinedRoom");
-            }
-            
+                var rig = GorillaGameManager.instance.FindPlayerVRRig(newPlayer);
+                Debug.Log(newPlayer.NickName + ": Has Entered Room");
+                if (newPlayer.CustomProperties.TryGetValue("CarName", out object carname))
+                {
+                    if (Plugin.Instance.carsGameobjs.Where(obj => obj.name == carname.ToString()).SingleOrDefault())
+                    {
+                        GameObject carobj = Plugin.Instance.carsGameobjs.Where(obj => obj.name == carname.ToString()).SingleOrDefault();
+                        var car = GameObject.Instantiate(carobj);
+                        car.name = newPlayer.NickName + ": " + carobj.name;
+                        PlayerList.Add(newPlayer, car);
+                        car.transform.position = Plugin.Instance.CarGameObject.transform.position;
+                    }
+                }
+                if ((bool)newPlayer.CustomProperties["Sitting"])
+                {
+                    PlayerList[newPlayer].transform.parent = rig.transform;
+                    PlayerList[newPlayer].transform.GetChild(0).localPosition = rig.transform.position;
+                    PlayerList[newPlayer].transform.GetChild(0).localRotation = rig.transform.rotation;
 
+                }
+                else
+                {
+                    PlayerList[newPlayer].transform.parent = null;
+                }
+            }
+            else
+            {
+                Debug.Log("==================================== newPlayer does not have car mod silly ====================================");
+
+            }
 
         }
-
         public override void OnPlayerLeftRoom(Player otherPlayer)
         {
             try
@@ -102,116 +105,80 @@ namespace GorillaCars
             {
                 Debug.Log(otherPlayer + "has left but there was an error");
             }
-            
-            
-            
-        }
-        public override void OnPlayerEnteredRoom(Player newPlayer)
-        {
-            try
-            {
-                if (!newPlayer.IsLocal)
-                {
-                    if (newPlayer.CustomProperties.TryGetValue("Sitting", out object yippeitworks))
-                    {
-                        if (newPlayer.CustomProperties.ContainsKey("Sitting"))
-                        {
-                            PlayerList.Add(newPlayer, null);
-                            Debug.Log(newPlayer.CustomProperties.TryGetValue("CarName", out object carname2));
-                            if (newPlayer.CustomProperties.TryGetValue("CarName", out object carname))
-                            {
-                                GameObject carobj = Plugin.Instance.carsGameobjs.Where(obj => obj.name == carname.ToString()).SingleOrDefault();
-                                var car = GameObject.Instantiate(carobj);
-                                car.name = newPlayer.NickName + ": " + carobj.name;
-                                Destroy(car.GetComponentInChildren<Rigidbody>());
-                                Destroy(car.GetComponentInChildren<manager>());
-                                PlayerList.AddOrUpdate(newPlayer, car);
-                                car.transform.position = Plugin.Instance.CarGameObject.transform.position;
-                            }
-                                
-                        }
-                        if ((bool)newPlayer.CustomProperties["Sitting"])
-                        {
-                            var rig = GorillaGameManager.StaticFindRigForPlayer(newPlayer);
-                            PlayerList[newPlayer].transform.parent = rig.transform;
-                            PlayerList[newPlayer].transform.GetChild(0).localPosition = new Vector3(-65.1881f, 1.3421f, -71.4834f);
-                            PlayerList[newPlayer].transform.GetChild(0).localRotation = Quaternion.Euler(0f, 84.4751f, 0f);
 
 
-                        }
-                        else
-                        {
-                            PlayerList[newPlayer].transform.parent = null;
-                        }
-                    }
 
-                }
-            }
-            catch
-            {
-                Debug.Log("error with " + newPlayer);
-            }
-           
-                
         }
 
-        public override void OnPlayerPropertiesUpdate(Player targetPlayer, Hashtable changedProps)
+        public override void OnPlayerPropertiesUpdate(Player targetPlayer, ExitGames.Client.Photon.Hashtable changedProps)
         {
-            try
+
+            if (!targetPlayer.IsLocal)
             {
-                if (!targetPlayer.IsLocal)
+                if (PlayerList.ContainsKey(targetPlayer))
                 {
-                    if (PlayerList.ContainsKey(targetPlayer))
+                    try
                     {
-                        if (changedProps.TryGetValue("Sitting", out object yippeitworks))
+                        if (changedProps.TryGetValue("Sitting", out object yippie))
                         {
-                            var rig = GorillaGameManager.StaticFindRigForPlayer(targetPlayer);
+                            var rig =  GorillaGameManager.instance.FindPlayerVRRig(targetPlayer);
+                           
                             if ((bool)changedProps["Sitting"])
                             {
                                 PlayerList[targetPlayer].transform.parent = rig.transform;
-                                PlayerList[targetPlayer].transform.GetChild(0).localPosition = new Vector3(-65.1881f, 1.3421f, -71.4834f);
-                                PlayerList[targetPlayer].transform.GetChild(0).localRotation = Quaternion.Euler(0f, 84.4751f, 0f);
+                                PlayerList[targetPlayer].transform.GetChild(0).localPosition = rig.transform.position;
+                                PlayerList[targetPlayer].transform.GetChild(0).localRotation = rig.transform.rotation;
+
                             }
                             else
                             {
                                 PlayerList[targetPlayer].transform.parent = null;
                             }
                         }
-                        if (changedProps.TryGetValue("CarName", out object carname))
+
+                    }
+                    catch
+                    {
+                        Debug.Log("idek");
+                    }
+
+
+                    try
+                    {
+                        if (targetPlayer.CustomProperties.ContainsKey("CarName"))
                         {
-                            if (PhotonNetwork.InRoom)
+                            Debug.Log(targetPlayer.NickName + ": props updated");
+                            if (changedProps.TryGetValue("CarName", out object carname))
                             {
-                                if (Plugin.Instance.carsGameobjs.Contains(carname))
+
+                                if (Plugin.Instance.carsGameobjs.Where(obj => obj.name == carname.ToString()).SingleOrDefault())
                                 {
                                     Destroy(PlayerList[targetPlayer]);
                                     GameObject carobj = Plugin.Instance.carsGameobjs.Where(obj => obj.name == carname.ToString()).SingleOrDefault();
                                     var car = GameObject.Instantiate(carobj);
                                     car.name = targetPlayer.NickName + ": " + carobj.name;
-                                    Destroy(car.GetComponentInChildren<Rigidbody>());
-                                    Destroy(car.GetComponentInChildren<manager>());
                                     PlayerList.AddOrUpdate(targetPlayer, car);
-                                    car.transform.position = Plugin.Instance.CarGameObject.transform.position;
+                                    car.transform.localPosition = PlayerList[targetPlayer].transform.FindChildRecursive("DriverSeat").position;
+                                    car.transform.localRotation = Quaternion.Euler(0, 0, 0);
                                 }
-
+                                else
+                                {
+                                    Destroy(PlayerList[targetPlayer]);
+                                }
                             }
-
-
-
-
                         }
                     }
-
-
+                    catch
+                    {
+                        Debug.Log("Error with diffrent cars?");
+                    }
 
                 }
             }
-            catch
-            {
-                Debug.Log("props error");
-            }
-           
-
         }
+
+
+
         public override void OnLeftRoom()
         {
             try
@@ -224,10 +191,10 @@ namespace GorillaCars
             }
             catch
             {
-              Debug.Log("dawg if this called you suck");
+                Debug.Log("dawg if this called you suck");
             }
-            
-           
+
+
 
         }
     }
