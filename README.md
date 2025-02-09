@@ -5,3 +5,7 @@
 # custom cars
 
 https://github.com/Striker-67/CustomCarsProject
+
+# my discord
+
+https://discord.gg/XRjZc2p3qQ
