@@ -6,7 +6,6 @@ using UnityEngine.InputSystem;
 using Photon.Pun;
 using GorillaNetworking;
 using ExitGames.Client.Photon;
-using GorillaCars.Patches;
 using TMPro;
 using System.Linq;
 using UnityEngine.XR;
@@ -42,8 +41,6 @@ namespace GorillaCars
         private LayerMask baseMask;
         private const float horizontalMultiplier = 60f, verticalMultiplier = 50f;
 
-        GameObject raycastsphere;
-
         Transform frontLeftWheel;
         Transform frontRightWheel;
         Transform rearLeftWheel;
@@ -58,10 +55,6 @@ namespace GorillaCars
         GameObject EngineStop;
         GameObject EngineLoop;
         public CustomCarDescripter CarDescriptor;
-        //bool setup; (commented out because its never used)
-        bool guiEnabled = true;
-        int index;
-
             
         public void Setup2()
         {
@@ -154,7 +147,7 @@ namespace GorillaCars
             {
                 
                 GorillaTagger.Instance.gameObject.GetComponent<Rigidbody>().velocity = Vector3.zero;
-                GorillaLocomotion.Player.Instance.transform.position = driver.transform.position;
+                GorillaLocomotion.GTPlayer.Instance.transform.position = driver.transform.position;
                GorillaTagger.Instance.rigidbody.position = Vector3.zero;
                
             }
@@ -212,10 +205,10 @@ namespace GorillaCars
                             if (ControllerInputPoller.instance.rightControllerGripFloat > 0f || ControllerInputPoller.instance.leftControllerGripFloat > 0f)
                            {
                                 sitting = true;
-                                baseMask = GorillaLocomotion.Player.Instance.locomotionEnabledLayers;
-                                GorillaLocomotion.Player.Instance.locomotionEnabledLayers = layerMask;
-                                GorillaLocomotion.Player.Instance.bodyCollider.isTrigger = true;
-                                GorillaLocomotion.Player.Instance.headCollider.isTrigger = true;
+                                baseMask = GorillaLocomotion.GTPlayer.Instance.locomotionEnabledLayers;
+                                GorillaLocomotion.GTPlayer.Instance.locomotionEnabledLayers = layerMask;
+                                GorillaLocomotion.GTPlayer.Instance.bodyCollider.isTrigger = true;
+                                GorillaLocomotion.GTPlayer.Instance.headCollider.isTrigger = true;
                              
 
                                 if (PhotonNetwork.LocalPlayer.CustomProperties != null)
@@ -234,9 +227,9 @@ namespace GorillaCars
                             if (ControllerInputPoller.instance.rightControllerGripFloat > 0f || ControllerInputPoller.instance.leftControllerGripFloat > 0f)
                             {
                                 sitting = false;
-                                GorillaLocomotion.Player.Instance.locomotionEnabledLayers = baseMask;
-                                GorillaLocomotion.Player.Instance.bodyCollider.isTrigger = false;
-                                GorillaLocomotion.Player.Instance.headCollider.isTrigger = false;
+                                GorillaLocomotion.GTPlayer.Instance.locomotionEnabledLayers = baseMask;
+                                GorillaLocomotion.GTPlayer.Instance.bodyCollider.isTrigger = false;
+                                GorillaLocomotion.GTPlayer.Instance.headCollider.isTrigger = false;
                               
                                 if (PhotonNetwork.LocalPlayer.CustomProperties != null)
                                 {
