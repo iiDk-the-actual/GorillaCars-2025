@@ -16,7 +16,7 @@ namespace GorillaCars
         public void Start()
         {
             modcheck = this;
-            baseMask = GorillaLocomotion.Player.Instance.locomotionEnabledLayers;
+            baseMask = GorillaLocomotion.GTPlayer.Instance.locomotionEnabledLayers;
         }
         public bool IsModded()
         {
@@ -35,9 +35,9 @@ namespace GorillaCars
                     cars.GetComponent<manager>().sitting = false;
                     GorillaTagger.Instance.mainCamera.transform.parent.rotation = Quaternion.Euler(0f, 47.9593f, 0f);
                     
-                    GorillaLocomotion.Player.Instance.locomotionEnabledLayers = baseMask;
-                    GorillaLocomotion.Player.Instance.bodyCollider.isTrigger = false;
-                    GorillaLocomotion.Player.Instance.headCollider.isTrigger = false;
+                    GorillaLocomotion.GTPlayer.Instance.locomotionEnabledLayers = baseMask;
+                    GorillaLocomotion.GTPlayer.Instance.bodyCollider.isTrigger = false;
+                    GorillaLocomotion.GTPlayer.Instance.headCollider.isTrigger = false;
                 }
             }
             else
