@@ -29,7 +29,6 @@ namespace GorillaCars
         public static Plugin Instance { get; set; }
         public GameObject Wheel;
         public static bool IsSteamVr;
-        bool loading = true;
         public float X = 90;
         public float y = 90;
         public float z = 90;
@@ -71,10 +70,7 @@ namespace GorillaCars
                 cars = Directory.GetFiles(filespath, "*.car");
 
             }
-            catch (Exception ex)
-            {
-                Debug.Log("OMG");
-            }
+            catch { }
 
             try
             {
@@ -118,10 +114,7 @@ namespace GorillaCars
                
 
             }
-            catch (Exception e)
-            {
-                Debug.Log("Learn to code lmao");
-            }
+            catch { }
 
             var asserloader = LoadAssetBundle("GorillaCars.assets.assetloader");
             assetloaderstand = asserloader.LoadAsset<GameObject>("assetloader");
@@ -207,7 +200,7 @@ namespace GorillaCars
 
                 if (raycastsphere == null)
                     spawnsphere();
-                if (GorillaLocomotion.Player.Instance != null && Physics.Raycast(GorillaLocomotion.Player.Instance.leftControllerTransform.position, GorillaLocomotion.Player.Instance.leftControllerTransform.forward, out RaycastHit hit, 100))
+                if (GorillaLocomotion.GTPlayer.Instance != null && Physics.Raycast(GorillaLocomotion.GTPlayer.Instance.leftControllerTransform.position, GorillaLocomotion.GTPlayer.Instance.leftControllerTransform.forward, out RaycastHit hit, 100))
                 {
                     if (hit.collider != null)
                         raycastsphere.transform.position = hit.point;
